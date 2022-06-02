@@ -33,7 +33,7 @@ DOWNLOAD_DELAY = 3
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = False
 
-LOG_FILE = "test.log"
+LOG_FILE = "test-9K.log"
 LOG_LEVEL = "INFO"
 LOG_ENABLED = True
 
@@ -44,11 +44,11 @@ LOG_ENABLED = True
 DEFAULT_REQUEST_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Language': 'en',
-    # 'cookie':'csrftoken=l258xdU41AGVaJsoGrrwncw9iShLkhwFyFc338kBx9lPoI70VCzxogGz2vexcXol; sessionid=5y9j1ns5riak1x5fn5ewvnliwxm6u25y'
-    'cookie':'csrftoken=9YHoygM5Dpgq3HR0zRpW6Bi5E6FKboKqnZlVLBhINrDAZCrlY7LSwBkoCuC39kVf; sessionid=dg4haml9qh4s22b5h9pecvxl53t7pbao'
+    # 'cookie':'csrftoken=kHaO7YPr3dOSflnczECPYWiIpj6LYopGwpQjGhvZRHKfhUPAaSuRPr754a1M2Uw9; sessionid=v5gimm0iq1a61h1o9vw5oeqblhvlg45i'
+    'cookie':'csrftoken=QbnjbMWbu8PosBwoNnVW9KQVx7ISL8WdDTiy7Y4OjE3xttxU9nYKoZh9MfKoq3JA; sessionid=0xxzfwu1rz9mmhsa79ww85a48pe7ban2'
 }
 
-
+HTTPERROR_ALLOWED_CODES = [302]
 # HTTPERROR_ALLOWED_CODES = [302]
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
