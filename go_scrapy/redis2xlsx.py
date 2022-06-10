@@ -8,7 +8,7 @@ import threading
 from openpyxl.drawing import image
 from openpyxl import Workbook
 
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(host='localhost', port=6379, decode_responses=True, password="root")
 
 def mkdir(path):
     isExists = os.path.exists(path)

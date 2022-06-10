@@ -2,8 +2,10 @@
 #
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import random
 
 from scrapy import signals
+import requests
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
@@ -101,3 +103,57 @@ class GoScrapyDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+class ProxyMiddleWare(object):
+
+    def process_request(self, request, spider):
+        """ 对 request 加上proxy"""
+        # proxies = ["39.107.227.240:3128", "81.68.243.42:80", "111.229.237.116:3128"
+        #            ,"222.69.240.130:8001","120.42.46.226:6666","218.1.142.142:57114"
+        #         ,"61.164.39.68:53281"]
+        # old_proxy = request.meta.get('proxy')
+        # print('---------this is old_proxy ip ----------:{}'.format(old_proxy))
+        # if old_proxy == None:
+        #     proxy = requests.get("http://127.0.0.1:5010/get?type=https").json().get("proxy")
+        #     # proxy = random.sample(proxies, 1)[0]
+        #     print('---------this is request ip ----------:{}'.format(proxy))
+        #     request.meta['proxy'] = 'https://' + proxy
+
+        proxy = requests.get("http://127.0.0.1:5010/get").json().get("proxy")
+        is_https = requests.get("http://127.0.0.1:5010/get").json().get("https")
+        if is_https == False :
+            str = "http://"
+        else:
+            str = "https://"
+
+        print('---------this is request ip ----------:{}'.format(proxy))
+        request.meta['proxy'] = str + proxy
+
+
+
+    def process_response(self, request, response, spider):
+        """ 对返回的 response 处理"""
+
+        # 如果返回的 response 状态不是 200， 重新生成当前的 request对象
+        if response.status != 200:
+            origin_proxy = request.meta['proxy']
+            requests.get("http://127.0.0.1:5010/delete/?proxy={}".format(origin_proxy))
+            proxy = requests.get("http://127.0.0.1:5010/get?type=https").json().get("proxy")
+            request.meta['proxy'] = 'https://' + proxy
+            print('200 this is new response ip:' + proxy)
+            # 对当前 request 加上代理
+            return request
+
+        return response
+
+    def process_exception(self, request, exception, spider):
+        # self.logger.debug('Try Exception time')
+        # self.logger.debug('Try second time')
+        proxy_addr = requests.get("http://127.0.0.1:5010/get/").json().get("proxy")
+        is_https = requests.get("http://127.0.0.1:5010/get/").json().get("https")
+        if is_https == False :
+            request.meta['proxy'] = 'http://' + proxy_addr
+        else:
+            request.meta['proxy'] = 'https://' + proxy_addr
+        return request
