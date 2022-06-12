@@ -33,7 +33,7 @@ DOWNLOAD_DELAY = 3
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = False
 
-LOG_FILE = "test-15K.log"
+LOG_FILE = "test-13K.log"
 LOG_LEVEL = "INFO"
 LOG_ENABLED = True
 
@@ -60,7 +60,7 @@ HTTPERROR_ALLOWED_CODES = [302]
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-         'go_scrapy.middlewares.ProxyMiddleWare':543,
+         # 'go_scrapy.middlewares.ProxyMiddleWare':543,
         # 'scrapy.downloadermiddlewares.retry.RetryMiddleware':None
    }
 

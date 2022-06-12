@@ -8,7 +8,7 @@ import threading
 from openpyxl.drawing import image
 from openpyxl import Workbook
 
-r = redis.Redis(host='localhost', port=6379, decode_responses=True, password="root")
+r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 def mkdir(path):
     isExists = os.path.exists(path)
@@ -90,14 +90,19 @@ def get_qipu(Step):
     qipuids = r.keys("/{}K*".format(Step))
     for i in qipuids:
         try:
-            image_path = r.hget(i, 'img')
-            r2 = re.compile('\d{3,}')
-            qipu_id = r2.search(i).group()
-            print(qipu_id)
-            qipu_content = r.hget(i, 'content')
-            add_excel(image_path, qipu_id, qipu_content, I, ws1)
-            I += 1
+            if r.sismember("un_success_content", i) == 0:
+                image_path = r.hget(i, 'img')
+                r2 = re.compile('\d{3,}')
+                qipu_id = r2.search(i).group()
+                print(qipu_id)
+                qipu_content = r.hget(i, 'content')
+                add_excel(image_path, qipu_id, qipu_content, I, ws1)
+                I += 1
+            else:
+                print("jump,{}".format(i))
+                continue
         except Exception:
+            print("Exception jump,{}".format(i))
             continue
     wb1.save('{}K.xlsx'.format(Step))
 
@@ -127,13 +132,14 @@ def add_excel(image_path, qipu_id, qipu_content, Index, ws1):
 
 
 
+
 if __name__ == '__main__':
-    # for index in range(1,16):
-    #     get_qipu(index)
-    L1 = [1,2]
-    L2 = [2,3]
-    print(set(r.keys("/{}K*".format(6))))
-    print(list(set(L1).difference(set(L2))))
+    for index in range(13,14):
+        get_qipu(index)
+    # L1 = [1,2]
+    # L2 = [2,3]
+    # print(set(r.keys("/{}K*".format(6))))
+    # print(list(set(L1).difference(set(L2))))
     r.close()
     # thread = threading.Thread(target= a, args=(10, ))
     # thread.start()
