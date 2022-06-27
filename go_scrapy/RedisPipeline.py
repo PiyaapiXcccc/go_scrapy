@@ -6,7 +6,7 @@ class RedisPipeline(object):
     conn = None
 
     def open_spider(self, spider):
-        self.conn = redis.Redis(host='localhost', port=6379, decode_responses=True)
+        self.conn = redis.Redis(host='localhost', port=6379, decode_responses=True, password="root")
 
     def process_item(self, item, spider):
         if item['content'] == None:
@@ -32,7 +32,7 @@ class DuplicatesPipeline(object):
     conn = None
 
     def __init__(self):
-        self.conn = redis.Redis(host='localhost', port=6379, decode_responses=True)
+        self.conn = redis.Redis(host='localhost', port=6379, decode_responses=True, password="root")
 
     def process_item(self, item, spider):
         if self.conn.sadd('success_qipu', item['id']) == 0:

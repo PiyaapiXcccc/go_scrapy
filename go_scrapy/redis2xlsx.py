@@ -8,7 +8,8 @@ import threading
 from openpyxl.drawing import image
 from openpyxl import Workbook
 
-r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+# r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+r = redis.Redis(host='localhost', port=6379, decode_responses=True, password="root")
 
 def mkdir(path):
     isExists = os.path.exists(path)
@@ -28,6 +29,9 @@ def filter(qipu_dict, ws2, Index):
     levelname = qipu_dict['levelname']
     answers = qipu_dict['answers']
     vv = qipu_dict['vv']
+    # sx = qipu_dict['sx']
+    # sy = qipu_dict['sy']
+    lu = qipu_dict['lu']
 
     ws2.cell(Index, 3).value = name
     ws2.cell(Index, 4).value = qtypename
@@ -60,6 +64,7 @@ def filter(qipu_dict, ws2, Index):
     ws2.cell(Index, 8).value = str(answer_type1)[1:-1].replace("[","{").replace("]","}").replace("\'","\"")
     # ws2.cell(Index, 9).value = str(answer_type2)[1:-1].replace("[","{").replace("]","}").replace("\'","\"")
     ws2.cell(Index, 9).value =str(answer_type3)[1:-1].replace("[","{").replace("]","}").replace("\'","\"")
+    ws2.cell(Index, 10).value =int(lu)
     if isblackfirst:
         ws2.cell(Index, 6).value = "0:黑色"
     else:
@@ -90,36 +95,45 @@ def get_qipu(Step):
     qipuids = r.keys("/{}K*".format(Step))
     for i in qipuids:
         try:
-            if r.sismember("un_success_content", i) == 0:
-                image_path = r.hget(i, 'img')
-                r2 = re.compile('\d{3,}')
-                qipu_id = r2.search(i).group()
-                print(qipu_id)
-                qipu_content = r.hget(i, 'content')
-                add_excel(image_path, qipu_id, qipu_content, I, ws1)
-                I += 1
-            else:
-                print("jump,{}".format(i))
-                continue
+            image_path = r.hget(i, 'img')
+            r2 = re.compile('\d{3,}')
+            qipu_id = r2.search(i).group()
+            print(qipu_id)
+            qipu_content = r.hget(i, 'content')
+            add_excel(image_path, qipu_id, qipu_content, I, ws1)
+            I += 1
         except Exception:
-            print("Exception jump,{}".format(i))
             continue
     wb1.save('{}K.xlsx'.format(Step))
 
 
 def add_excel(image_path, qipu_id, qipu_content, Index, ws1):
-    image_bytes = requests.get(image_path).content
-    data_stream = image.BytesIO(image_bytes)
-    im = image.Image(data_stream)
+    # image_bytes = requests.get(image_path).content
+    # data_stream = image.BytesIO(image_bytes)
+    # im = image.Image(data_stream)
+    # c = ws1.column_dimensions['A']
+    # # 设置行高列宽公式里面的96为图片的水平和垂直分辨率。即所谓的dpi。
+    # c.width = im.width * 12 / 96
+    # r = ws1.row_dimensions[Index]
+    # r.height = im.height * 72 / 96
+    # CellStr = "A" + str(Index)
+    # # 第一列 图片
+    # ws1.add_image(im, CellStr)
+    # # 第二列 棋谱id
+    # ws1.cell(Index, 2).value = qipu_id
+    # r = re.compile("(?<=(var g_qq = )).*(?=(;var taskinfo))")
+    # String = r.search(qipu_content)
+    # if String != None:
+    #     String2 = String.group().replace("false", "False")
+    #     String3 = String2.replace("true", "True")
+    #     String4 = String3.replace("null", "None")
+    #     qipu_dict = eval(String4)
+    #     filter(qipu_dict, ws1, Index)
+
+
+
     c = ws1.column_dimensions['A']
-    # 设置行高列宽公式里面的96为图片的水平和垂直分辨率。即所谓的dpi。
-    c.width = im.width * 12 / 96
     r = ws1.row_dimensions[Index]
-    r.height = im.height * 72 / 96
-    CellStr = "A" + str(Index)
-    # 第一列 图片
-    ws1.add_image(im, CellStr)
-    # 第二列 棋谱id
     ws1.cell(Index, 2).value = qipu_id
     r = re.compile("(?<=(var g_qq = )).*(?=(;var taskinfo))")
     String = r.search(qipu_content)
@@ -129,12 +143,11 @@ def add_excel(image_path, qipu_id, qipu_content, Index, ws1):
         String4 = String3.replace("null", "None")
         qipu_dict = eval(String4)
         filter(qipu_dict, ws1, Index)
-
-
+    #
 
 
 if __name__ == '__main__':
-    for index in range(13,14):
+    for index in range(15,16):
         get_qipu(index)
     # L1 = [1,2]
     # L2 = [2,3]

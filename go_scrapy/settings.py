@@ -33,7 +33,7 @@ DOWNLOAD_DELAY = 3
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = False
 
-LOG_FILE = "test-13K.log"
+LOG_FILE = "test-15K.log"
 LOG_LEVEL = "INFO"
 LOG_ENABLED = True
 
